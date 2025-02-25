@@ -21,6 +21,3 @@ COPY admin /admin-app
 
 
 EXPOSE 45000
-
-CMD ["poetry", "run", "python", "manage.py", "migrate"]
-CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:45000", "core.wsgi:application"]

@@ -1,5 +1,7 @@
 import json
 import logging
+from typing import Optional, Any
+
 from django.core.management.base import BaseCommand
 from confluent_kafka import Consumer, KafkaError
 from library.models import Borrow, Book
@@ -14,6 +16,10 @@ class Command(BaseCommand):
     help = "Kafka Consumer for Borrow Events"
 
     def handle(self, *args, **options):
+        """Start the Kafka consumer and process messages."""
+        logger.info("Starting Kafka Consumer for Borrow Events")
+        self.stdout.write(self.style.SUCCESS("Kafka Consumer Started"))
+        settings.KAFKA_CONFIG["group.id"] = "borrow_book_group"
         consumer = Consumer(
             settings.KAFKA_CONFIG)
         consumer.subscribe([TOPIC])
@@ -42,10 +48,10 @@ class Command(BaseCommand):
         finally:
             consumer.close()
 
-    def process_borrow(self, data):
+    def process_borrow(self, data: dict[str, Any]):
         """Process and store the borrow record."""
         try:
-            borrow_id = data.get("id")
+            borrow_id: Optional[str]= data.get("borrow_id")
             if not borrow_id:
                 logger.error("Missing borrow ID in message")
                 return
@@ -54,14 +60,17 @@ class Command(BaseCommand):
                 logger.info(f"Borrow record already exists: {borrow_id}")
                 return
 
-            book = Book.objects.filter(id=data["book"]["id"], is_available=True).first()
-            user = User.objects.filter(id=data["user"]["id"]).first()
+            book: Optional[Book] = Book.objects.filter(id=data["book_id"], is_available=True).first()
+            user: Optional[User] = User.objects.filter(email=data["user_email"]).first()
 
-            if not book or not user:
-                logger.error(f"Book or User not found for ID: {borrow_id}")
+            if not book:
+                logger.error(f"Book not found for ID: {borrow_id}")
+                return
+            if not user:
+                logger.error(f"User not found for ID: {borrow_id}")
                 return
 
-            borrow = Borrow(
+            borrow: Borrow = Borrow(
                 id=borrow_id,
                 book=book,
                 user=user,

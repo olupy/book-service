@@ -34,8 +34,8 @@ class Book(AuditableModel):
 
 class Borrow(AuditableModel):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="borrows")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="borrowed_books")
-    borrow_date = models.DateTimeField(default=timezone.now())
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="borrowed_books", null = True)
+    borrow_date = models.DateTimeField()
     return_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

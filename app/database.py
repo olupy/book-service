@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.config import settings
+from config import settings
 from confluent_kafka import Producer
 import json
 from typing import Any

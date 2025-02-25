@@ -1,7 +1,7 @@
 import json
 import asyncio
 from confluent_kafka import Consumer, KafkaException
-from app.database import books_collection
+from database import books_collection
 from config import settings
 import threading
 from typing import Optional
@@ -50,7 +50,7 @@ async def save_book(event_data):
         return
 
     book_data: dict[str, Optional[str]] = {
-        "id": event_data.get("id"),
+        "producer_id": event_data.get("id"),
         "title": event_data.get("title"),
         "author": event_data.get("author"),
         "publication_date": event_data.get("publication_date"),
@@ -68,8 +68,10 @@ async def save_book(event_data):
     await books_collection.insert_one(book_data)
     print(f"Book '{event_data['title']}' stored in Frontend api db.")
 
-
 def start_kafka_consumer():
-    """Runs the Kafka consumer in a separate background"""
-    thread = threading.Thread(target=consume_books, daemon=True)
+    """Runs the Kafka consumer in a separate background thread"""
+    def run_async_consumer():
+        asyncio.run(consume_books())
+
+    thread = threading.Thread(target=run_async_consumer, daemon=True)
     thread.start()

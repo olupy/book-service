@@ -48,7 +48,7 @@ class Command(BaseCommand):
             return
 
         # we try to extract the message received
-        user_id = event_data.get("id")
+        user_id = event_data.get("producer_id")
         email = event_data.get("email")
         firstname = event_data.get("firstname")
         lastname = event_data.get("lastname")
@@ -62,14 +62,15 @@ class Command(BaseCommand):
 
         # Save user to DB
         user, created = User.objects.update_or_create(
-            id=user_id,
+            email=email,
             defaults={
                 "email": email,
                 "firstname": firstname,
                 "lastname": lastname,
                 "role": role,
                 "is_active": is_active,
-                "password": password
+                "password": password,
+                "producer_id": user_id
             }
         )
 

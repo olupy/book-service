@@ -24,6 +24,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/user/', include('user.v1.urls')),
+    path('api/v1/library/', include('library.v1.urls')),
 ]
 
 if settings.DEBUG:

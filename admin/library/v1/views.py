@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,  OrderingFilter
 from library.models import Book
 from library.v1.serializers import BookSerializer, BorrowBookSerializer
-from models import Borrow
+from library.models import Borrow
 
 
 # Create your views here.

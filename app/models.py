@@ -27,6 +27,7 @@ class Book(BaseModel):
     publisher: str
     file: str
     cover_image: str
+    producer_id: str
 
 
 class Borrow(BaseModel):

@@ -2,7 +2,9 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 from pydantic import Field
-from app.models import Book, User
+from models import Book, User
+import json
+from bson import ObjectId
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -20,6 +22,13 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class UserUpdate(BaseModel):
+    firstname: Optional[str]
+    lastname: Optional[str]
+    email: Optional[EmailStr]
+    is_active: Optional[bool]
+
+
 
 class Borrow(BaseModel):
     book_id: str
@@ -35,4 +44,12 @@ class Borrow(BaseModel):
     user: Optional[User] = None
 
     class Config:
-        from_attributes = True  # Allows conversion from ORM models
+        from_attributes = True
+
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)

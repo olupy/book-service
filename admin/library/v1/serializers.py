@@ -2,7 +2,8 @@ from typing import Optional
 
 from rest_framework import serializers
 from library.producer import send_kafka_event
-from library.models import Book
+from library.models import Book, Borrow
+
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +33,12 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class BorrowBookSerializer(serializers.ModelSerializer):
+    book_title = serializers.CharField(source="book.title", read_only=True)
+    book_author = serializers.CharField(source="book.author", read_only=True)
+    user_firstname = serializers.CharField(source="user.firstname", read_only=True)
+    user_lastname = serializers.CharField(source="user.lastname", read_only=True)
+    user_email = serializers.CharField(source="user.email", read_only=True)
+
     class Meta:
-        model = Book
-        fields = ("id", "title", "author", "isbn", "is_available")
-        read_only_fields = ("id", "title", "author", "isbn", "is_available")
+        model = Borrow
+        fields = "__all__"

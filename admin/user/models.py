@@ -14,3 +14,5 @@ class User(AbstractBaseUser, PermissionsMixin, AuditableModel):
     role = models.CharField(max_length=100, null=True, choices= RoleEnum.choices())
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
+    USERNAME_FIELD = 'email'
+    producer_id = models.CharField(max_length=100, null=True)
